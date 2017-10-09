@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nicky.mappers.UserDAOs">
+    <resultMap id="BaseResultMap" type="com.nicky.entity.User">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="age" property="age" jdbcType="SMALLINT"/>
+        <result column="name" property="name" jdbcType="CHAR"/>
+    </resultMap>
+    <sql id="SELECT_All_Column">
+        SELECT id, age, name
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="User">
+        SELECT *
+        FROM user
+        WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="User">
+        DELETE FROM user
+        WHERE id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="User">
+        INSERT INTO user ( age, 
+          name )
+        VALUES ( #{age,jdbcType=SMALLINT}, 
+          #{name,jdbcType=CHAR} )
+        <selectKey keyProperty="id" resultType="int">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+    </insert>
+    <insert id="insertSelective" parameterType="User">
+        INSERT INTO user
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="age != null">
+                age,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+        </trim>
+        VALUES
+        <trim prefix="(" suffixOverrides="," suffix=")">
+            <if test="age != null">
+                #{age,jdbcType=SMALLINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=CHAR},
+            </if>
+        </trim>
+        <selectKey keyProperty="id" resultType="int">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        INSERT INTO user ( age, 
+          name )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (
+            #{item.age,jdbcType=SMALLINT}, 
+            #{item.name,jdbcType=CHAR}
+            )
+        </foreach>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="User">
+        UPDATE user
+        <set>
+            <if test="age != null">
+                age = #{age,jdbcType=SMALLINT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=CHAR},
+            </if>
+        </set>
+        WHERE id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="User">
+        UPDATE user
+        SET age = #{age,jdbcType=SMALLINT},
+            name = #{name,jdbcType=CHAR}
+        WHERE id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>
